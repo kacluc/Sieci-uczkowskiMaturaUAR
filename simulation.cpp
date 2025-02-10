@@ -1,6 +1,5 @@
 #include "simulation.h"
 
-
 Simulation::Simulation(QObject *parent)
     : QObject{parent}
 {
@@ -9,33 +8,40 @@ Simulation::Simulation(QObject *parent)
     this->arx = std::make_unique<ARX>();
 }
 
-Simulation& Simulation::get_instance(){
+Simulation &Simulation::get_instance()
+{
     static Simulation instance;
     return instance;
 }
 
-Simulation::~Simulation(){
+Simulation::~Simulation()
+{
     this->killTimer(this->timer_id);
 }
 
-float Simulation::get_ticks_per_second() const{
+float Simulation::get_ticks_per_second() const
+{
     return this->ticks_per_second;
 }
 
-void Simulation::increment_tick(){
+void Simulation::increment_tick()
+{
     this->tick++;
 }
 
-size_t Simulation::get_tick(){
+size_t Simulation::get_tick()
+{
     return this->tick;
 }
 
-template <typename T>
-void memcopy_s(void* dest, const T& src, size_t size = 1){
+template<typename T>
+void memcopy_s(void *dest, const T &src, size_t size = 1)
+{
     std::memcpy(dest, &src, sizeof(T) * size);
 }
 
-void Simulation::simulate(){
+void Simulation::simulate()
+{
     static float error = 0;
     static float arx_output = 0;
     static float pid_output = 0;
@@ -51,7 +57,6 @@ void Simulation::simulate(){
     pid_output = this->pid->run(error);
 
     arx_output = this->arx->run(pid_output);
-
 
     SimulationFrame frame{
         .tick = tick,
@@ -72,7 +77,8 @@ void Simulation::simulate(){
     emit this->add_series("P", this->pid->proportional_part, ChartPosition::top);
     emit this->add_series("PID", pid_output, ChartPosition::top);
 
-    emit this->add_series("Generator", generator, ChartPosition::bottom);;
+    emit this->add_series("Generator", generator, ChartPosition::bottom);
+    ;
     emit this->add_series("Error", error, ChartPosition::middle);
 
     emit this->add_series("ARX", arx_output, ChartPosition::bottom);
@@ -83,15 +89,18 @@ void Simulation::simulate(){
     this->tick++;
 }
 
-void Simulation::set_ticks_per_second(float ticks_per_second){
+void Simulation::set_ticks_per_second(float ticks_per_second)
+{
     this->ticks_per_second = ticks_per_second;
 }
 
-void Simulation::timerEvent(QTimerEvent *event){
+void Simulation::timerEvent(QTimerEvent *event)
+{
     this->simulate();
 }
 
-void Simulation::start(){
+void Simulation::start()
+{
     const int temp = std::max({this->interval, 30});
 
     this->timer_id = this->startTimer((temp));
@@ -100,7 +109,8 @@ void Simulation::start(){
     emit this->simulation_start();
 }
 
-void Simulation::reset(){
+void Simulation::reset()
+{
     this->stop();
 
     this->tick = 0;
@@ -111,31 +121,35 @@ void Simulation::reset(){
     this->pid->reset();
     this->arx->reset();
     this->frames.clear();
-
 }
 
-void Simulation::stop(){
+void Simulation::stop()
+{
     this->killTimer(this->timer_id);
     this->is_running = false;
 
     emit this->simulation_stop();
 }
 
-void Simulation::set_duration(float duration){
+void Simulation::set_duration(float duration)
+{
     this->durration = duration;
 }
 
-void Simulation::set_interval(int interval){
+void Simulation::set_interval(int interval)
+{
     this->interval = interval;
 }
 
-int Simulation::get_interval() const{
+int Simulation::get_interval() const
+{
     return this->interval;
 }
 
-struct SimulationDeserialized{
+struct SimulationDeserialized
+{
     // simulation
-    int interval;     // [0:3]
+    int interval;    // [0:3]
     float durration; // [4:7]
 
     // pid
@@ -144,20 +158,21 @@ struct SimulationDeserialized{
     float pid_td; // [16:19]
 
     // generator
-    float generator_amplitude;     // [20:23]
-    float generator_frequency;     // [24:27]
-    GeneratorType generator_type;   // [28:31]
+    float generator_amplitude;    // [20:23]
+    float generator_frequency;    // [24:27]
+    GeneratorType generator_type; // [28:31]
 
     // arx
-    float arx_noise;           // [32:35]
-    NoiseType arx_noise_type;   // [36:39]
-    size_t arx_delay;           // [40:43]
-
+    float arx_noise;          // [32:35]
+    NoiseType arx_noise_type; // [36:39]
+    size_t arx_delay;         // [40:43]
 };
 
-std::vector<std::byte> Simulation::serialize(){
+std::vector<std::byte> Simulation::serialize()
+{
     constexpr size_t data_size = sizeof(SimulationDeserialized);
-    const size_t vector_sizes = sizeof(float) * this->arx->get_a().size() + sizeof(float) * this->arx->get_b().size() + (sizeof(size_t) * 2);
+    const size_t vector_sizes = sizeof(float) * this->arx->get_a().size()
+                                + sizeof(float) * this->arx->get_b().size() + (sizeof(size_t) * 2);
 
     std::vector<std::byte> data(data_size + vector_sizes);
 
@@ -175,7 +190,7 @@ std::vector<std::byte> Simulation::serialize(){
         this->arx->get_delay(),
     };
 
-    std::byte* data_ptr = data.data();
+    std::byte *data_ptr = data.data();
 
     std::memcpy(data_ptr, &deserialized, data_size);
     data_ptr += data_size;
@@ -184,32 +199,33 @@ std::vector<std::byte> Simulation::serialize(){
     memcpy(data_ptr, &a_size, sizeof(size_t));
     data_ptr += sizeof(size_t);
 
-    qDebug( ) << "a_size: " << a_size;
+    qDebug() << "a_size: " << a_size;
 
     memcpy(data_ptr, this->arx->get_a().data(), sizeof(float) * a_size);
     data_ptr += sizeof(float) * this->arx->get_a().size();
 
     size_t b_size = this->arx->get_b().size();
-    qDebug( ) << "b_size"<< b_size;
+    qDebug() << "b_size" << b_size;
     memcpy(data_ptr, &b_size, sizeof(size_t));
     data_ptr += sizeof(size_t);
 
     memcpy(data_ptr, this->arx->get_a().data(), sizeof(float) * this->arx->get_a().size());
     data_ptr += sizeof(float) * this->arx->get_a().size();
 
-    qDebug( ) << "data size: " << data.size();
+    qDebug() << "data size: " << data.size();
 
     return data;
 }
 
-void Simulation::deserialize(std::vector<std::byte> data){
+void Simulation::deserialize(std::vector<std::byte> data)
+{
     constexpr size_t data_size = sizeof(SimulationDeserialized);
 
-    qDebug( ) << "data size: " << data.size();
+    qDebug() << "data size: " << data.size();
 
     SimulationDeserialized deserialized;
 
-    std::byte* data_ptr = data.data();
+    std::byte *data_ptr = data.data();
 
     std::memcpy(&deserialized, data_ptr, sizeof(SimulationDeserialized));
     data_ptr += sizeof(SimulationDeserialized);
@@ -218,7 +234,7 @@ void Simulation::deserialize(std::vector<std::byte> data){
     memcpy(&a_size, data_ptr, sizeof(size_t));
     data_ptr += sizeof(size_t);
 
-    qDebug( ) << "a_size: " << a_size;
+    qDebug() << "a_size: " << a_size;
 
     std::vector<float> a(a_size);
     memcpy(a.data(), data_ptr, sizeof(float) * a_size);
@@ -227,7 +243,7 @@ void Simulation::deserialize(std::vector<std::byte> data){
     size_t b_size;
     memcpy(&b_size, data_ptr, sizeof(size_t));
     data_ptr += sizeof(size_t);
-    qDebug( ) << "b_size"<< b_size;
+    qDebug() << "b_size" << b_size;
 
     std::vector<float> b(b_size);
     memcpy(b.data(), data_ptr, sizeof(float) * b_size);

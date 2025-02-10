@@ -1,21 +1,20 @@
 #include "generator.h"
+#include <QDebug>
 #include <QtMath>
 #include <cmath>
-#include <QDebug>
 
 Generator::Generator() {}
 
 float Generator::run(float time)
 {
-    const float period = 100 / this->frequency ;
+    const float period = 50 / this->frequency;
     // qDebug() << "period: " << period;
 
     switch (this->type) {
     case GeneratorType::sine:
         return this->amplitude * qSin<float>(2 * M_PI * period * time);
     case GeneratorType::square:
-        return qSin<float>(2 * M_PI * period * time) > 0 ? this->amplitude
-                                                         : -this->amplitude;
+        return qSin<float>(2 * M_PI * period * time) > 0 ? this->amplitude : -this->amplitude;
     case GeneratorType::triangle:
         return this->amplitude * qAsin<float>(qSin<float>(2 * M_PI * period * time));
     case GeneratorType::sawtooth:

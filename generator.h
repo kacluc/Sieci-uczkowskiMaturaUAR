@@ -1,7 +1,7 @@
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
-enum class GeneratorType{
+enum class GeneratorType {
     sine,
     square,
     triangle,

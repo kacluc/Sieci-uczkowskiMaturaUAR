@@ -1,7 +1,6 @@
 #include "chartwidget.h"
 #include "ui_chartwidget.h"
 
-
 static size_t chart_counter{0};
 
 ChartWidget::ChartWidget(QWidget *parent)
@@ -14,7 +13,6 @@ ChartWidget::ChartWidget(QWidget *parent)
     , simulation(Simulation::get_instance())
     , position(static_cast<ChartPosition>(chart_counter++))
 {
-
     ui->setupUi(this);
 
     this->init();
@@ -24,13 +22,14 @@ ChartWidget::ChartWidget(QWidget *parent)
     connect(&this->simulation, &Simulation::reset_chart, this, &ChartWidget::reset);
 }
 
-void ChartWidget::reset(){
-    for (auto series : this->series_list){
+void ChartWidget::reset()
+{
+    for (auto series : this->series_list) {
         series->clear();
     }
 
     this->set_ranges();
-    this->axis_y->setRange(-1,1);
+    this->axis_y->setRange(-1, 1);
 }
 
 ChartWidget::~ChartWidget()
@@ -38,7 +37,7 @@ ChartWidget::~ChartWidget()
     delete ui;
     delete chart;
 
-    for (auto series : this->series_list){
+    for (auto series : this->series_list) {
         delete series;
     }
 
@@ -67,28 +66,28 @@ void ChartWidget::init()
     this->setLayout(layout);
 }
 
+void ChartWidget::append_to_series(float x, float y) {}
 
-void ChartWidget::append_to_series(float x, float y){
+void ChartWidget::add_series(QString series_name, float y, ChartPosition position)
+{
+    if (position != this->position)
+        return;
 
-}
-
-void ChartWidget::add_series(QString series_name, float y, ChartPosition position){
-    if (position != this->position) return;
-
-    auto result = std::find_if(this->series_list.begin(), this->series_list.end(), [series_name](QLineSeries *series){
-        return series->name() == series_name;
-    });
+    auto result = std::find_if(this->series_list.begin(),
+                               this->series_list.end(),
+                               [series_name](QLineSeries *series) {
+                                   return series->name() == series_name;
+                               });
 
     const Point point{static_cast<float>(this->simulation.get_tick()), y};
 
-    if (result == this->series_list.end()){
+    if (result == this->series_list.end()) {
         auto *new_series = new QLineSeries();
         new_series->setName(series_name);
         this->chart->addSeries(new_series);
 
         new_series->attachAxis(this->axis_x);
         new_series->attachAxis(this->axis_y);
-
 
         this->series_list.push_back(new_series);
     } else {
@@ -103,23 +102,25 @@ void ChartWidget::add_series(QString series_name, float y, ChartPosition positio
     }
 }
 
-Range ChartWidget::get_x_range(){
+Range ChartWidget::get_x_range()
+{
     const size_t max_points = simulation.get_ticks_per_second() * 4;
     size_t x_min_range{0};
 
-    if (this->simulation.get_tick() > max_points){
+    if (this->simulation.get_tick() > max_points) {
         x_min_range = this->simulation.get_tick() - max_points;
     }
 
     return {static_cast<float>(x_min_range), static_cast<float>(this->simulation.get_tick())};
 }
 
-Range ChartWidget::get_y_range(){
+Range ChartWidget::get_y_range()
+{
     float min_y{0};
     float max_y{0};
 
-    for (auto series : this->series_list){
-        for (auto point : series->points()){
+    for (auto series : this->series_list) {
+        for (auto point : series->points()) {
             min_y = qMin(min_y, point.y());
             max_y = qMax(max_y, point.y());
         }
@@ -128,21 +129,23 @@ Range ChartWidget::get_y_range(){
     return {min_y, max_y};
 }
 
-void ChartWidget::set_ranges(){
+void ChartWidget::set_ranges()
+{
     Range x_range = this->get_x_range();
     Range y_range = this->get_y_range();
 
     // set chart axis range to 1,2
 
-
     this->axis_x->setRange(x_range.min, x_range.max);
     this->axis_y->setRange(y_range.min - 1, y_range.max + 1);
 }
 
-void ChartWidget::update_chart(){
+void ChartWidget::update_chart()
+{
     this->set_ranges();
 }
 
-void ChartWidget::scroll_chart(){
+void ChartWidget::scroll_chart()
+{
     this->axis_x->setRange(0, this->simulation.get_tick());
 }

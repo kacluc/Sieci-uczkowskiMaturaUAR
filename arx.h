@@ -3,7 +3,7 @@
 
 #include <vector>
 
-enum class NoiseType{
+enum class NoiseType {
     normal,
     uniform,
     triangular,
@@ -52,7 +52,6 @@ private:
     NoiseType noise_type{NoiseType::normal};
 
     float noise{0.01};
-
 };
 
 #endif // ARX_H

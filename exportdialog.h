@@ -7,7 +7,8 @@ namespace Ui {
 class ExportDialog;
 }
 
-struct ExportChecked{
+struct ExportChecked
+{
     bool pid_i;
     bool pid_p;
     bool pid_d;
@@ -30,8 +31,8 @@ public:
     ~ExportDialog();
 
     ExportChecked get_checked();
-private:
 
+private:
     Ui::ExportDialog *ui;
 };
 

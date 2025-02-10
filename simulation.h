@@ -4,23 +4,24 @@
 #include <QMainWindow>
 #include <QObject>
 
-#include "pid.h"
-#include "generator.h"
 #include "arx.h"
+#include "generator.h"
+#include "pid.h"
 
-enum class ChartPosition{
+enum class ChartPosition {
     top,
     middle,
     bottom,
 };
 
-
-struct Point{
+struct Point
+{
     float x;
     float y;
 };
 
-struct SimulationFrame{
+struct SimulationFrame
+{
     size_t tick;
     float geneartor_output;
 
@@ -33,14 +34,13 @@ struct SimulationFrame{
 
     float arx_output;
     float noise;
-
 };
 
 class Simulation : public QObject
 {
     Q_OBJECT
 public:
-    static Simulation& get_instance();
+    static Simulation &get_instance();
 
     void start();
     void stop();
@@ -77,7 +77,6 @@ signals:
     void simulation_start();
     void simulation_stop();
 
-
     void reset_chart();
     void update_chart();
     void add_series(QString series_name, float y, ChartPosition position);
@@ -95,7 +94,6 @@ private:
 
     explicit Simulation(QObject *parent = nullptr);
     ~Simulation();
-
 
 signals:
 };

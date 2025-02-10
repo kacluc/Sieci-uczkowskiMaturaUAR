@@ -1,35 +1,42 @@
 #include "pid.h"
-#include <numeric>
 #include <QDebug>
+#include <numeric>
 
 PID::PID() {}
 
-void PID::set_kp(float kp){
+void PID::set_kp(float kp)
+{
     this->kp = kp;
 }
 
-void PID::set_ti(float ti){
+void PID::set_ti(float ti)
+{
     this->ti = ti;
 }
 
-void PID::set_td(float td){
+void PID::set_td(float td)
+{
     this->td = td;
 }
 
-float PID::get_kp() const{
+float PID::get_kp() const
+{
     return this->kp;
 }
 
-float PID::get_ti() const{
+float PID::get_ti() const
+{
     return this->ti;
 }
 
-float PID::get_td() const{
+float PID::get_td() const
+{
     return this->td;
 }
 
-void PID::run_integral(float error){
-    if (this->ti == 0){
+void PID::run_integral(float error)
+{
+    if (this->ti == 0) {
         this->integral_values.clear();
         this->integral_part = 0;
 
@@ -38,12 +45,14 @@ void PID::run_integral(float error){
 
     this->integral_values.push_back(error);
 
-
-    this->integral_part = std::accumulate(this->integral_values.begin(), this->integral_values.end(), 0.0);
-    this->integral_part *= 1.0f/this->ti;
+    this->integral_part = std::accumulate(this->integral_values.begin(),
+                                          this->integral_values.end(),
+                                          0.0);
+    this->integral_part *= 1.0f / this->ti;
 }
 
-void PID::run_derivative(float error){
+void PID::run_derivative(float error)
+{
     const float derivative = (error - this->previous_value);
 
     qDebug() << "derivative: " << derivative;
@@ -52,11 +61,13 @@ void PID::run_derivative(float error){
     this->derivative_part = derivative * this->td;
 }
 
-void PID::run_proportional(float error){
+void PID::run_proportional(float error)
+{
     this->proportional_part = error * this->kp;
 }
 
-void PID::reset(){
+void PID::reset()
+{
     this->integral_values.clear();
 
     this->integral_part = 0;
@@ -65,7 +76,8 @@ void PID::reset(){
     this->previous_value = 0;
 }
 
-float PID::run(float error){
+float PID::run(float error)
+{
     this->run_integral(error);
     this->run_derivative(error);
     this->run_proportional(error);

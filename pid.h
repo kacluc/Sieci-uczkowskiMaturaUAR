@@ -26,6 +26,7 @@ public:
     float run(float error);
 
     void reset();
+
 private:
     float kp{1};
     float ti{1};

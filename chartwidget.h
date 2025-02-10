@@ -1,21 +1,21 @@
 #ifndef CHARTWIDGET_H
 #define CHARTWIDGET_H
 
+#include <QApplication>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
-#include <QApplication>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <vector>
 #include "simulation.h"
+#include <vector>
 
 namespace Ui {
 class ChartWidget;
 }
 
-struct Range{
+struct Range
+{
     float min;
     float max;
 };
@@ -33,11 +33,10 @@ public slots:
     void reset();
     void update_chart();
 
-    std::vector<QLineSeries*> get_series_list() const { return this->series_list; }
+    std::vector<QLineSeries *> get_series_list() const { return this->series_list; }
     ChartPosition get_position() const { return this->position; }
 
 private:
-
     void append_to_series(float x, float y);
 
     Range get_x_range();
@@ -50,12 +49,12 @@ private:
 
     size_t durationTimer{0};
 
-    Simulation& simulation;
+    Simulation &simulation;
 
     QChart *chart;
     QChartView *chart_view;
 
-    std::vector<QLineSeries*> series_list;
+    std::vector<QLineSeries *> series_list;
 
     QValueAxis *axis_x;
     QValueAxis *axis_y;

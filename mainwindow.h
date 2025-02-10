@@ -1,10 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include "simulation.h"
 #include <QAction>
+#include <QMainWindow>
 #include "exportdialog.h"
+#include "simulation.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -62,7 +62,7 @@ private slots:
 private:
     void init();
 
-    Simulation& simulation;
+    Simulation &simulation;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H
