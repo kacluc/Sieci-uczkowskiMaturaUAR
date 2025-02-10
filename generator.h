@@ -19,9 +19,12 @@ public:
     void set_frequency(float frequency);
     void set_amplitude(float amplitude);
     void set_type(GeneratorType type);
+    void set_infill(float infill);
 
     float get_frequency() const;
     float get_amplitude() const;
+    float get_infill() const;
+
     GeneratorType get_type() const;
 
 private:
@@ -29,6 +32,7 @@ private:
 
     float frequency{100};
     float amplitude{1};
+    float infill{1};
 };
 
 #endif // GENERATOR_H

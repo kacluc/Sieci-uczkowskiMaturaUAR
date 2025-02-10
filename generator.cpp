@@ -29,6 +29,16 @@ void Generator::set_frequency(float frequency)
     this->frequency = frequency;
 }
 
+void Generator::set_infill(float infill)
+{
+    this->infill = infill;
+}
+
+float Generator::get_infill() const
+{
+    return this->infill;
+}
+
 void Generator::set_amplitude(float amplitude)
 {
     this->amplitude = amplitude;

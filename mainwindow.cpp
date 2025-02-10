@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QTimer>
 #include "./ui_mainwindow.h"
+#include "exportdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -302,37 +303,37 @@ void MainWindow::on_simulation_stop_button_clicked()
     this->simulation.stop();
 }
 
-void MainWindow::on_simulation_duration_input_valueChanged(double arg1)
+void MainWindow::on_simulation_duration_input_editingFinished()
 {
     if (this->simulation.is_running)
         this->simulation.stop();
 
-    this->simulation.set_duration(arg1);
+    this->simulation.set_duration(this->ui->simulation_duration_input->value());;
 }
 
-void MainWindow::on_pid_ti_input_valueChanged(double arg1)
+void MainWindow::on_pid_ti_input_editingFinished()
 {
-    this->simulation.pid->set_ti(arg1);
+    this->simulation.pid->set_ti(this->ui->pid_ti_input->value());
 }
 
-void MainWindow::on_pid_td_input_valueChanged(double arg1)
+void MainWindow::on_pid_td_input_editingFinished()
 {
-    this->simulation.pid->set_td(arg1);
+    this->simulation.pid->set_td(this->ui->pid_td_input->value());
 }
 
-void MainWindow::on_pid_kp_input_valueChanged(double arg1)
+void MainWindow::on_pid_kp_input_editingFinished()
 {
-    this->simulation.pid->set_kp(arg1);
+    this->simulation.pid->set_kp(this->ui->pid_kp_input->value());
 }
 
-void MainWindow::on_generator_amplitude_input_valueChanged(double arg1)
+void MainWindow::on_generator_amplitude_input_editingFinished()
 {
-    this->simulation.generator->set_amplitude(arg1);
+    this->simulation.generator->set_amplitude(this->ui->generator_amplitude_input->value());
 }
 
-void MainWindow::on_generator_frequency_input_valueChanged(double arg1)
+void MainWindow::on_generator_frequency_input_editingFinished()
 {
-    this->simulation.generator->set_frequency(arg1);
+    this->simulation.generator->set_frequency(this->ui->generator_frequency_input->value());
 }
 
 void MainWindow::on_generator_generatortype_input_currentIndexChanged(int index)
@@ -340,9 +341,9 @@ void MainWindow::on_generator_generatortype_input_currentIndexChanged(int index)
     this->simulation.generator->set_type(static_cast<GeneratorType>(index));
 }
 
-void MainWindow::on_arx_noise_input_valueChanged(double arg1)
+void MainWindow::on_arx_noise_input_editingFinished()
 {
-    this->simulation.arx->set_noise(arg1);
+    this->simulation.arx->set_noise(this->ui->arx_noise_input->value());
 }
 
 void MainWindow::on_arx_noisetype_input_currentIndexChanged(int index)
@@ -350,9 +351,9 @@ void MainWindow::on_arx_noisetype_input_currentIndexChanged(int index)
     this->simulation.arx->set_noise_type(static_cast<NoiseType>(index));
 }
 
-void MainWindow::on_arx_delay_input_valueChanged(int arg1)
+void MainWindow::on_arx_delay_input_editingFinished()
 {
-    this->simulation.arx->set_delay(arg1);
+    this->simulation.arx->set_delay(this->ui->arx_delay_input->value());
 }
 
 void MainWindow::on_arx_b_input_textChanged(const QString &arg1)
@@ -393,9 +394,15 @@ void MainWindow::on_simulation_reset_button_clicked()
     emit this->simulation.reset();
 }
 
-void MainWindow::on_simulation_interval_input_valueChanged(int arg1)
+void MainWindow::on_simulation_interval_input_editingFinished()
 {
     if (this->simulation.is_running)
         this->simulation.stop();
-    this->simulation.set_interval(arg1);
+    this->simulation.set_interval(this->ui->simulation_interval_input->value());
 }
+
+void MainWindow::on_generator_infill_input_editingFinished()
+{
+    this->simulation.generator->set_infill(this->ui->generator_infill_input->value());
+}
+
