@@ -17,8 +17,10 @@ float Generator::run(float time)
     case GeneratorType::square:
     {
         // implement formula with infill and modulo operator
-        const float infill_period = period * this->infill / 100;
-        const float time_modulo = fmod(time, period);
+        const float tperiod = 1/period;
+
+        const float infill_period = tperiod * this->infill / 100;
+        const float time_modulo = fmod(time, tperiod);
 
         return this->amplitude * (time_modulo < infill_period ? 1 : 0);
     }

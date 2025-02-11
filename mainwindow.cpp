@@ -356,8 +356,9 @@ void MainWindow::on_arx_delay_input_editingFinished()
     this->simulation.arx->set_delay(this->ui->arx_delay_input->value());
 }
 
-void MainWindow::on_arx_b_input_textChanged(const QString &arg1)
+void MainWindow::on_arx_b_input_editingFinished()
 {
+    QString arg1 = this->ui->arx_b_input->text();
     QStringList b_values = arg1.split(",");
     std::vector<float> b;
     for (const QString &value : b_values) {
@@ -369,11 +370,14 @@ void MainWindow::on_arx_b_input_textChanged(const QString &arg1)
             qDebug() << e.what();
         }
     }
+
     this->simulation.arx->set_b(b);
 }
 
-void MainWindow::on_arx_a_input_textChanged(const QString &arg1)
+void MainWindow::on_arx_a_input_editingFinished()
 {
+    QString arg1 = this->ui->arx_a_input->text();
+
     QStringList a_values = arg1.split(",");
     std::vector<float> a;
     for (const QString &value : a_values) {

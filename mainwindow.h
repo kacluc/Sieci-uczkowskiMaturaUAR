@@ -46,8 +46,8 @@ private slots:
     void on_arx_noise_input_editingFinished();
     void on_arx_noisetype_input_currentIndexChanged(int index);
     void on_arx_delay_input_editingFinished();
-    void on_arx_b_input_textChanged(const QString &arg1);
-    void on_arx_a_input_textChanged(const QString &arg1);
+    void on_arx_b_input_editingFinished();
+    void on_arx_a_input_editingFinished();
 
     void on_simulation_reset_button_clicked();
 

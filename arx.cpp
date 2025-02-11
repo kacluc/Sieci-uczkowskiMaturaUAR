@@ -117,14 +117,22 @@ float ARX::run(float input)
     for (size_t i = 0; i < this->A.size(); i++) {
         if (tick - i > delay) {
             const size_t u_idx = (tick - i) % delay;
-            result += this->B[i] * this->u[u_idx];
+            try {
+              result += this->B.at(i) * this->u.at(u_idx);
+            } catch (...) {
+
+            }
+
         }
     }
 
     for (size_t i = 0; i < this->B.size(); i++) {
         if (tick - i > delay) {
             const size_t y_idx = (tick - i) % delay;
-            result -= this->A[i] * this->y[y_idx];
+            try{
+                            result -= this->A.at(i) * this->y.at(y_idx);
+            } catch (...){;}
+
         }
     }
 
