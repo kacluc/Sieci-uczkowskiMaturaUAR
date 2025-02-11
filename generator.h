@@ -32,7 +32,7 @@ private:
 
     float frequency{100};
     float amplitude{1};
-    float infill{1};
+    float infill{50};
 };
 
 #endif // GENERATOR_H

@@ -410,7 +410,17 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="generator_infill_input"/>
+          <widget class="QDoubleSpinBox" name="generator_infill_input">
+           <property name="prefix">
+            <string/>
+           </property>
+           <property name="suffix">
+            <string>%</string>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+          </widget>
          </item>
         </layout>
         <zorder>generator_infill_input</zorder>

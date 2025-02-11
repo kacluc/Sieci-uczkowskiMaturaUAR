@@ -246,7 +246,7 @@ void MainWindow::init()
     this->ui->generator_frequency_input->setValue(this->simulation.generator->get_frequency());
     this->ui->generator_generatortype_input->setCurrentIndex(
         static_cast<int>(this->simulation.generator->get_type()));
-
+    this->ui->generator_infill_input->setValue(this->simulation.generator->get_infill());
     // arx
 
     this->ui->arx_noise_input->setValue(this->simulation.arx->get_noise());
