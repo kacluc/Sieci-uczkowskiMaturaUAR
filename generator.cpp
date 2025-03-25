@@ -7,17 +7,12 @@ Generator::Generator() {}
 
 float Generator::run(float time)
 {
-    const float period = 50.0f / this->frequency;
-
-    // qDebug() << "period: " << period;
-
     switch (this->type) {
     case GeneratorType::sine:
-        return this->amplitude * qSin<float>(2 * M_PI * period * time);
+        return this->amplitude * qSin<float>(2 * M_PI * time / this->frequency);
     case GeneratorType::square:
     {
-        // implement formula with infill and modulo operator
-        const float tperiod = 1/period;
+        const float tperiod = this->frequency * 2 ;
 
         const float infill_period = tperiod * this->infill / 100;
         const float time_modulo = fmod(time, tperiod);
@@ -25,9 +20,9 @@ float Generator::run(float time)
         return this->amplitude * (time_modulo < infill_period ? 1 : 0);
     }
     case GeneratorType::triangle:
-        return this->amplitude * qAsin<float>(qSin<float>(2 * M_PI * period * time));
+        return this->amplitude * qAsin<float>(qSin<float>(2 * M_PI  * time / this->frequency));
     case GeneratorType::sawtooth:
-        return this->amplitude * qAtan<float>(qTan<float>(M_PI * period * time));
+        return this->amplitude * qAtan<float>(qTan<float>(M_PI * time / this->frequency));
     case GeneratorType::single_jump:
         return this->amplitude * (time < 1 ? 1 : 0);
     }

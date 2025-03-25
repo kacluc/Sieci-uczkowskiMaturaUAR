@@ -1,5 +1,6 @@
 #include "chartwidget.h"
 #include "ui_chartwidget.h"
+#include <algorithm>
 
 static size_t chart_counter{0};
 
@@ -79,7 +80,7 @@ void ChartWidget::add_series(QString series_name, float y, ChartPosition positio
                                    return series->name() == series_name;
                                });
 
-    const Point point{static_cast<float>(this->simulation.get_tick()), y};
+    const Point point{static_cast<float>(this->simulation.get_current_time()), y};
 
     if (result == this->series_list.end()) {
         auto *new_series = new QLineSeries();
@@ -91,27 +92,27 @@ void ChartWidget::add_series(QString series_name, float y, ChartPosition positio
 
         this->series_list.push_back(new_series);
     } else {
-        // size_t max_points = simulation.get_ticks_per_second() * 5;
         const size_t max_points = simulation.get_ticks_per_second() * 4;
 
         QLineSeries *series = *result;
 
         if (series->count() > max_points)
             series->removePoints(0, 1);
+
         series->append(point.x, point.y);
     }
 }
 
 Range ChartWidget::get_x_range()
 {
-    const size_t max_points = simulation.get_ticks_per_second() * 4;
-    size_t x_min_range{0};
+    const float offset = simulation.get_interval() / 1000.0f  * 100;
+    float x_min_range{0};
+    float x_max_range{0};
 
-    if (this->simulation.get_tick() > max_points) {
-        x_min_range = this->simulation.get_tick() - max_points;
-    }
+    x_min_range = std::max({simulation.get_current_time() - offset, 0.0f});
+    x_max_range = std::max({simulation.get_current_time(), offset});
 
-    return {static_cast<float>(x_min_range), static_cast<float>(this->simulation.get_tick())};
+    return {x_min_range, x_max_range};
 }
 
 Range ChartWidget::get_y_range()

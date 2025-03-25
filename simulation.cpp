@@ -29,7 +29,11 @@ void Simulation::increment_tick()
     this->tick++;
 }
 
-size_t Simulation::get_tick()
+float Simulation::get_current_time() const {
+    return this->current_time;
+}
+
+size_t Simulation::get_tick() const
 {
     return this->tick;
 }
@@ -48,9 +52,10 @@ void Simulation::simulate()
     static float generator = 0;
 
     const size_t tick = this->get_tick();
-    const float time = tick / this->ticks_per_second;
+    // const float time = interval / 1000.0f ;
+    this->current_time += interval / 1000.0f;
 
-    generator = this->generator->run(time);
+    generator = this->generator->run(current_time);
 
     error = generator - arx_output;
 

@@ -48,7 +48,8 @@ public:
     void set_ticks_per_second(float ticks_per_second);
     void set_duration(float duration);
 
-    size_t get_tick();
+    size_t get_tick() const;
+    float get_current_time() const;
     float get_ticks_per_second() const;
 
     void increment_tick();
@@ -89,6 +90,7 @@ private:
 
     float ticks_per_second{60};
     size_t tick{0};
+    float current_time{0};
     size_t timer_id{0};
     int interval{100};
 
