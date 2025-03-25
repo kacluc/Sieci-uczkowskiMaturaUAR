@@ -403,10 +403,30 @@ void MainWindow::on_simulation_interval_input_editingFinished()
     if (this->simulation.is_running)
         this->simulation.stop();
     this->simulation.set_interval(this->ui->simulation_interval_input->value());
+
+    this->simulation.start();
 }
 
 void MainWindow::on_generator_infill_input_editingFinished()
 {
     this->simulation.generator->set_infill(this->ui->generator_infill_input->value());
+}
+
+
+void MainWindow::on_outside_sum_radio_clicked()
+{
+    if (!this->simulation.get_outside_sum()){
+        simulation.set_outside_sum(true);
+        this->ui->inside_sum_radio->setChecked(false);
+    }
+}
+
+
+void MainWindow::on_inside_sum_radio_clicked()
+{
+    if (this->simulation.get_outside_sum()){
+        simulation.set_outside_sum(false);
+        this->ui->outside_sum_radio->setChecked(false);
+    }
 }
 

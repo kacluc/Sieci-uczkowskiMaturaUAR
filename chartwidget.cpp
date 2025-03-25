@@ -109,6 +109,12 @@ Range ChartWidget::get_x_range()
     float x_min_range{0};
     float x_max_range{0};
 
+    float x_min_points{999999.0f};
+    for (auto series : this->series_list) {
+        for (auto point : series->points())
+            x_min_points = qMin(x_min_range, point.x());
+    }
+
     x_min_range = std::max({simulation.get_current_time() - offset, 0.0f});
     x_max_range = std::max({simulation.get_current_time(), offset});
 

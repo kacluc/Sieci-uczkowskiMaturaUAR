@@ -39,16 +39,23 @@ void PID::run_integral(float error)
     if (this->ti == 0) {
         this->integral_values.clear();
         this->integral_part = 0;
+        this->sum = 0.0f;
 
         return;
     }
 
     this->integral_values.push_back(error);
 
-    this->integral_part = std::accumulate(this->integral_values.begin(),
-                                          this->integral_values.end(),
-                                          0.0);
-    this->integral_part *= 1.0f / this->ti;
+    const float coefficent = 1.0f / this->ti; // 1 / Ti
+
+    this->sum += error * coefficent;
+
+    if (this->is_outside_sum) {
+        this->integral_part = this->sum;
+    } else {
+        this->integral_part = coefficent * std::accumulate(this->integral_values.begin(), this->integral_values.end(), 0.0f);
+    }
+
 }
 
 void PID::run_derivative(float error)
@@ -74,6 +81,7 @@ void PID::reset()
     this->derivative_part = 0;
     this->proportional_part = 0;
     this->previous_value = 0;
+    this->sum = 0;
 }
 
 float PID::run(float error)
@@ -83,4 +91,9 @@ float PID::run(float error)
     this->run_proportional(error);
 
     return this->integral_part + this->derivative_part + this->proportional_part;
+}
+
+void PID::set_mode(bool is_outside_sum)
+{
+    this->is_outside_sum = is_outside_sum;
 }

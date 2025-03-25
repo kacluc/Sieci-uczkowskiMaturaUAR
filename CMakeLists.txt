@@ -32,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         generator.h generator.cpp
         chartwidget.h chartwidget.cpp chartwidget.ui
         exportdialog.h exportdialog.cpp exportdialog.ui
+        resources.qrc
 
 
     )

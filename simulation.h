@@ -48,6 +48,9 @@ public:
     void set_ticks_per_second(float ticks_per_second);
     void set_duration(float duration);
 
+    void set_outside_sum(bool is_outside_sum);
+    bool get_outside_sum() const;
+
     size_t get_tick() const;
     float get_current_time() const;
     float get_ticks_per_second() const;
@@ -57,6 +60,7 @@ public:
     float durration{0};
 
     bool is_running{false};
+
 
     size_t duration_timer_id{0};
 
@@ -88,6 +92,7 @@ protected:
 private:
     void simulate();
 
+    bool is_outside_sum{true};
     float ticks_per_second{60};
     size_t tick{0};
     float current_time{0};

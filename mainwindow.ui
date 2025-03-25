@@ -308,16 +308,75 @@
          <item row="0" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <widget class="QRadioButton" name="radioButton">
+            <widget class="QRadioButton" name="outside_sum_radio">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_16">
+             <property name="maximumSize">
+              <size>
+               <width>48</width>
+               <height>48</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/ti_mode/resources/sum_outside.png</pixmap>
+             </property>
+             <property name="scaledContents">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="inside_sum_radio">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_3">
+            <widget class="QLabel" name="label_17">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>48</width>
+               <height>48</height>
+              </size>
+             </property>
              <property name="text">
               <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap resource="resources.qrc">:/ti_mode/resources/sum_inside.png</pixmap>
+             </property>
+             <property name="scaledContents">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -326,7 +385,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_15">
            <property name="text">
-            <string>Ti Mode</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -590,6 +649,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

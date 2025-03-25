@@ -60,6 +60,10 @@ private slots:
 
     void on_generator_infill_input_editingFinished();
 
+    void on_outside_sum_radio_clicked();
+
+    void on_inside_sum_radio_clicked();
+
 private:
     void init();
 

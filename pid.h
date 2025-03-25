@@ -10,6 +10,7 @@ public:
     void set_kp(float kp);
     void set_ti(float ti);
     void set_td(float td);
+    void set_mode(bool is_outside_sum);
 
     float get_kp() const;
     float get_ti() const;
@@ -25,9 +26,13 @@ public:
 
     float run(float error);
 
+
     void reset();
 
 private:
+    bool is_outside_sum{true};
+    float sum = 0.0f;
+
     float kp{1};
     float ti{1};
     float td{1};

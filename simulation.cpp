@@ -119,6 +119,7 @@ void Simulation::reset()
     this->stop();
 
     this->tick = 0;
+    this->current_time = 0;
     this->is_running = false;
 
     emit this->reset_chart();
@@ -266,4 +267,15 @@ void Simulation::deserialize(std::vector<std::byte> data)
     this->arx->set_noise(deserialized.arx_noise);
     this->arx->set_noise_type(deserialized.arx_noise_type);
     this->arx->set_delay(deserialized.arx_delay);
+}
+
+void Simulation::set_outside_sum(bool is_outside_sum)
+{
+    this->pid->set_mode(is_outside_sum);
+    this->is_outside_sum = is_outside_sum;
+}
+
+bool Simulation::get_outside_sum() const
+{
+    return this->is_outside_sum;
 }

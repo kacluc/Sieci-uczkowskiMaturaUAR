@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/ti_mode">
+        <file>resources/sum_inside.png</file>
+        <file>resources/sum_outside.png</file>
+    </qresource>
+</RCC>
