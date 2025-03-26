@@ -65,6 +65,11 @@ NoiseType ARX::get_noise_type() const
 
 void ARX::run_noise()
 {
+    if (this->noise == 0) {
+        this->noise_part = 0;
+        return;
+    }
+
     std::random_device rd;
     std::mt19937 gen(rd());
 

@@ -33,6 +33,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         chartwidget.h chartwidget.cpp chartwidget.ui
         exportdialog.h exportdialog.cpp exportdialog.ui
         resources.qrc
+        arxdialog.h arxdialog.cpp arxdialog.ui
 
 
     )
