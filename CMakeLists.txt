@@ -13,6 +13,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Charts)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -34,6 +35,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         exportdialog.h exportdialog.cpp exportdialog.ui
         resources.qrc
         arxdialog.h arxdialog.cpp arxdialog.ui
+        client.h client.cpp
+        server.h server.cpp
+        connectdialog.h connectdialog.cpp connectdialog.ui
+        disconnectdialog.h disconnectdialog.cpp disconnectdialog.ui
+
 
 
     )
@@ -44,6 +50,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(regulatixPRO PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(regulatixPRO PRIVATE Qt${QT_VERSION_MAJOR}::Charts)
 target_link_libraries(regulatixPRO PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(regulatixPRO PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET regulatixPRO APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

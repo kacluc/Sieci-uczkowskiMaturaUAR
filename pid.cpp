@@ -51,7 +51,10 @@ void PID::run_integral(float error)
     this->sum += error * coefficent;
 
     if (this->is_outside_sum)
-        this->integral_part = coefficent * std::accumulate(this->integral_values.begin(), this->integral_values.end(), 0.0f);
+        this->integral_part = coefficent
+                              * std::accumulate(this->integral_values.begin(),
+                                                this->integral_values.end(),
+                                                0.0f);
     else
         this->integral_part = this->sum;
 }

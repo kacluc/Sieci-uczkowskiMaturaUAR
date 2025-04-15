@@ -26,7 +26,6 @@ public:
 
     float run(float error);
 
-
     void reset();
 
 private:

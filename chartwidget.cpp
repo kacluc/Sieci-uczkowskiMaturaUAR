@@ -105,7 +105,7 @@ void ChartWidget::add_series(QString series_name, float y, ChartPosition positio
 
 Range ChartWidget::get_x_range()
 {
-    const float offset = simulation.get_interval() / 1000.0f  * 100;
+    const float offset = simulation.get_interval() / 1000.0f * 100;
     float x_min_range{0};
     float x_max_range{0};
 

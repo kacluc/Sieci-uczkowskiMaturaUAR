@@ -61,7 +61,6 @@ public:
 
     bool is_running{false};
 
-
     size_t duration_timer_id{0};
 
     void reset();

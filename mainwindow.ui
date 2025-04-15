@@ -524,6 +524,37 @@
         <zorder>label_13</zorder>
        </widget>
       </item>
+      <item>
+       <widget class="QGroupBox" name="IPhorizontalGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLineEdit" name="IPconnectionOutput">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>connected: --</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -582,7 +613,7 @@
      <x>0</x>
      <y>0</y>
      <width>922</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -599,8 +630,17 @@
     <addaction name="action_export"/>
     <addaction name="action_simulation_open"/>
    </widget>
+   <widget class="QMenu" name="menuNetwork">
+    <property name="title">
+     <string>Network</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="action_connect"/>
+    <addaction name="action_disconnect"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSimulation"/>
+   <addaction name="menuNetwork"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -638,6 +678,16 @@
   <action name="action_simulation_open">
    <property name="text">
     <string>Open...</string>
+   </property>
+  </action>
+  <action name="action_connect">
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="action_disconnect">
+   <property name="text">
+    <string>Disconnect</string>
    </property>
   </action>
  </widget>

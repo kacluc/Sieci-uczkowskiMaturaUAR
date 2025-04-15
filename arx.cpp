@@ -119,8 +119,7 @@ float ARX::run(float input)
 
     float result = 0;
 
-    if (this->B.size() != this->A.size())
-    {
+    if (this->B.size() != this->A.size()) {
         size_t size = std::max({B.size(), A.size()});
 
         B.resize(size);
@@ -131,23 +130,19 @@ float ARX::run(float input)
         if (tick - i > delay) {
             const size_t u_idx = (tick - i) % delay;
             try {
-              result += this->B.at(i) * this->u.at(u_idx);
+                result += this->B.at(i) * this->u.at(u_idx);
             } catch (...) {
-
             }
-
         }
     }
 
     for (size_t i = 0; i < this->B.size(); i++) {
         if (tick - i > delay) {
             const size_t y_idx = (tick - i) % delay;
-            try{
+            try {
                 result -= this->A.at(i) * this->y.at(y_idx);
-            } catch (...){
-
+            } catch (...) {
             }
-
         }
     }
 
@@ -158,7 +153,6 @@ float ARX::run(float input)
         u.resize(delay);
         y.resize(delay);
     }
-
 
     this->u[u_size_t] = input;
     this->y[y_size_t] = result;

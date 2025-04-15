@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QTimer>
 #include "./ui_mainwindow.h"
+#include "connectdialog.h"
 #include "exportdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -19,14 +20,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this->ui->action_save_as, &QAction::triggered, this, &MainWindow::action_save_as);
     connect(this->ui->action_open, &QAction::triggered, this, &MainWindow::action_open);
-    connect(this->ui->action_export,
-            &QAction::triggered,
-            this,
-            &MainWindow::action_simulation_export);
-    connect(this->ui->action_simulation_open,
-            &QAction::triggered,
-            this,
-            &MainWindow::action_simulation_open);
+    connect(this->ui->action_export, &QAction::triggered, this, &MainWindow::action_simulation_export);
+    connect(this->ui->action_simulation_open, &QAction::triggered, this, &MainWindow::action_simulation_open);
+    connect(this->ui->action_connect, &QAction::triggered, this, &MainWindow::action_connect);
+    connect(this->ui->action_disconnect, &QAction::triggered, this, &MainWindow::action_disconnect);
+
+    //this->ui->IPhorizontalGroupBox->setVisible(false);
+}
+
+void MainWindow::setup_UI()
+{
+    ui = new Ui::MainWindow;
 }
 
 void MainWindow::action_simulation_open()
@@ -223,6 +227,74 @@ void MainWindow::action_open()
     qDebug() << "opened";
 }
 
+void MainWindow::action_connect()
+{
+    bool simulation_is_running{simulation.is_running};
+    if(simulation.is_running) simulation.stop();
+    ConnectDialog* window = new ConnectDialog();
+    if(!!window->exec())
+    {
+        /*
+        simulation.reset();
+        if(this->is_connected)
+        {
+            is_connected = false;
+        */
+            if(this->server != nullptr)
+            {
+                delete this->server;
+                this->server = nullptr;
+            }
+            if(this->client != nullptr)
+            {
+                delete this->client;
+                this->client = nullptr;
+            }
+        /*
+        }
+        */
+        if(window->get_connection_type())
+        {
+            this->server = new SERVER(this);
+            this->server->set_ui(ui);
+            bool tst = false;
+            tst = this->server->startListening(window->get_Port());
+            qInfo() << "server listening: " << tst;
+        }
+        else
+        {
+            this->client = new CLIENT(this);
+            connect(this->client, SIGNAL(connected(QString,int)), this, SLOT(slot_connected(QString,int)));
+            bool tst = true, tst2 = true;
+
+            QHostAddress ipAdr(window->get_IP());
+            if (ipAdr.protocol() != QAbstractSocket::IPv4Protocol) {
+                tst = false;
+            }
+            if (window->get_Port() < 0 || 65535 < window->get_Port()) {
+                tst2 = false;
+            }
+
+            this->client->connectTo(window->get_IP(), window->get_Port());
+            qInfo() << "ip: " << tst << " port: " << tst2;
+            client->sendMsg("wiadomość");
+        }
+    }
+    else if(simulation_is_running) simulation.start();
+    delete window;
+}
+
+void MainWindow::slot_connected(QString adr, int port)
+{
+    ui->IPconnectionOutput->setText("Połączono: " + adr + ":" + QString::number(port));
+    qInfo() << "DZIAŁA";
+}
+
+void MainWindow::action_disconnect()
+{
+    qInfo() << "no se kliknąłeś śmieciu rozłączanie";
+}
+
 void MainWindow::init()
 {
     // simulation
@@ -308,7 +380,8 @@ void MainWindow::on_simulation_duration_input_editingFinished()
     if (this->simulation.is_running)
         this->simulation.stop();
 
-    this->simulation.set_duration(this->ui->simulation_duration_input->value());;
+    this->simulation.set_duration(this->ui->simulation_duration_input->value());
+    ;
 }
 
 void MainWindow::on_pid_ti_input_editingFinished()
@@ -412,21 +485,18 @@ void MainWindow::on_generator_infill_input_editingFinished()
     this->simulation.generator->set_infill(this->ui->generator_infill_input->value());
 }
 
-
 void MainWindow::on_outside_sum_radio_clicked()
 {
-    if (!this->simulation.get_outside_sum()){
+    if (!this->simulation.get_outside_sum()) {
         simulation.set_outside_sum(true);
         this->ui->inside_sum_radio->setChecked(false);
     }
 }
 
-
 void MainWindow::on_inside_sum_radio_clicked()
 {
-    if (this->simulation.get_outside_sum()){
+    if (this->simulation.get_outside_sum()) {
         simulation.set_outside_sum(false);
         this->ui->outside_sum_radio->setChecked(false);
     }
 }
-

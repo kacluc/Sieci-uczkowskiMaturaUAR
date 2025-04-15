@@ -29,7 +29,8 @@ void Simulation::increment_tick()
     this->tick++;
 }
 
-float Simulation::get_current_time() const {
+float Simulation::get_current_time() const
+{
     return this->current_time;
 }
 
@@ -82,12 +83,11 @@ void Simulation::simulate()
     emit this->add_series("P", this->pid->proportional_part, ChartPosition::top);
     emit this->add_series("PID", pid_output, ChartPosition::top);
 
-    emit this->add_series("Generator", generator, ChartPosition::bottom);
-    ;
     emit this->add_series("Error", error, ChartPosition::middle);
+    emit this->add_series("Noise", this->arx->noise_part, ChartPosition::middle);
 
     emit this->add_series("ARX", arx_output, ChartPosition::bottom);
-    emit this->add_series("Noise", this->arx->noise_part, ChartPosition::middle);
+    emit this->add_series("Generator", generator, ChartPosition::bottom);
 
     emit this->update_chart();
 

@@ -4,6 +4,9 @@
 #include <QAction>
 #include <QMainWindow>
 #include "simulation.h"
+#include "server.h"
+#include "client.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,6 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -57,6 +61,8 @@ private slots:
     void action_open();
     void action_simulation_export();
     void action_simulation_open();
+    void action_connect();
+    void action_disconnect();
 
     void on_generator_infill_input_editingFinished();
 
@@ -64,9 +70,15 @@ private slots:
 
     void on_inside_sum_radio_clicked();
 
+    //test
+    void slot_connected(QString adr, int port);
+
 private:
     void init();
-
+    void setup_UI();
+    bool is_connected = false;
+    SERVER* server = nullptr;
+    CLIENT* client = nullptr;
     Simulation &simulation;
     Ui::MainWindow *ui;
 };
