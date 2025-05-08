@@ -37,7 +37,9 @@ public:
     float noise_part{0};
 
     void run_noise();
+    float run(float input, size_t inner_tick);
     float run(float input);
+    float run_t(std::tuple<size_t,float>);
 
     void reset();
 

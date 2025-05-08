@@ -63,7 +63,7 @@ void PID::run_derivative(float error)
 {
     const float derivative = (error - this->previous_value);
 
-    qDebug() << "derivative: " << derivative;
+    //qDebug() << "derivative: " << derivative;
 
     this->previous_value = error;
     this->derivative_part = derivative * this->td;

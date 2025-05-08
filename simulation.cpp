@@ -1,4 +1,5 @@
 #include "simulation.h"
+#include "connection.h"
 
 Simulation::Simulation(QObject *parent)
     : QObject{parent}
@@ -6,6 +7,9 @@ Simulation::Simulation(QObject *parent)
     this->pid = std::make_unique<PID>();
     this->generator = std::make_unique<Generator>();
     this->arx = std::make_unique<ARX>();
+    this->connection = new Connection{this};
+
+    //connect(connection, SIGNAL(newMsg()), this, SLOT(recived_online_simulation()));
 }
 
 Simulation &Simulation::get_instance()
@@ -45,53 +49,124 @@ void memcopy_s(void *dest, const T &src, size_t size = 1)
     std::memcpy(dest, &src, sizeof(T) * size);
 }
 
-void Simulation::simulate()
+void Simulation::simulate_local()
 {
-    static float error = 0;
-    static float arx_output = 0;
-    static float pid_output = 0;
-    static float generator = 0;
-
+    this->tick++;
     const size_t tick = this->get_tick();
+
     // const float time = interval / 1000.0f ;
     this->current_time += interval / 1000.0f;
 
-    generator = this->generator->run(current_time);
+    generator_out = this->generator->run(current_time);
 
-    error = generator - arx_output;
+    error_output = generator_out - arx_output;
 
-    pid_output = this->pid->run(error);
+    pid_output = this->pid->run(error_output);
 
     arx_output = this->arx->run(pid_output);
 
     SimulationFrame frame{
         .tick = tick,
-        .geneartor_output = generator,
+        .geneartor_output = generator_out,
         .p = this->pid->proportional_part,
         .i = this->pid->integral_part,
         .d = this->pid->derivative_part,
         .pid_output = pid_output,
-        .error = error,
+        .error = error_output,
         .arx_output = arx_output,
         .noise = this->arx->noise_part,
     };
 
     this->frames.push_back(frame);
+    this->draw_simulation();
+}
 
-    emit this->add_series("I", this->pid->integral_part, ChartPosition::top);
-    emit this->add_series("D", this->pid->derivative_part, ChartPosition::top);
-    emit this->add_series("P", this->pid->proportional_part, ChartPosition::top);
-    emit this->add_series("PID", pid_output, ChartPosition::top);
+void Simulation::simulate_online()
+{
+    if(!connection->values_avaiable())
+    {
+        //const size_t tick = this->get_tick();
+        this->current_time += interval / 1000.0f;
+        generator_out = this->generator->run(current_time);
+        error_output = generator_out - arx_output;
+        pid_output = this->pid->run(error_output);
+        QByteArray msg;
+        QDataStream stream(&msg, QIODevice::ReadWrite);
+        stream << this->get_tick() << pid_output;
+        connection->send_msg(msg);
+        this->tick++;
+        // działa qInfo() << "wysłanie wiadomości z symulacji";
+    }
+}
 
-    emit this->add_series("Error", error, ChartPosition::middle);
-    emit this->add_series("Noise", this->arx->noise_part, ChartPosition::middle);
+void Simulation::recived_online_simulation()
+{
+    qInfo() << "ASDASDASDASDASDASDASDASDASD";
+    if(connection->get_connection_type() == Connected_as::client) qInfo() << "Obiekt Otrzymał wiadomość ZWROTNĄ";
+    if(connection->get_connection_type() == Connected_as::server) qInfo() << "Regulator Otrzymał wiadomość ZWROTNĄ";
+    switch(connection->get_connection_type())
+    {
+    default:
+    case Connected_as::none: break;
+    case Connected_as::server:
+    {
+        qInfo() << "tick: " << this->get_tick();
+        qInfo() << "Ilość ramek: " << frames.size() << "     index: " << connection->get_last_readed_index();
+        if(connection->values_avaiable())
+        {
+            auto msg = connection->get_values();
+            arx_output = std::get<1>(msg);
 
-    emit this->add_series("ARX", arx_output, ChartPosition::bottom);
-    emit this->add_series("Generator", generator, ChartPosition::bottom);
+            SimulationFrame frame{
+                .tick = std::get<0>(msg),
+                .geneartor_output = generator_out,
+                .p = this->pid->proportional_part,
+                .i = this->pid->integral_part,
+                .d = this->pid->derivative_part,
+                .pid_output = pid_output,
+                .error = error_output,
+                .arx_output = arx_output,
+                .noise = this->arx->noise_part,
+            };
+            this->frames.push_back(frame);
+            this->draw_simulation();
+            qInfo() << "sieciowa odpowiedź regulatora";
+        }
+        break;
+    }
+    case Connected_as::client:
+    {
+        //if(connection->values_avaiable())
+        {
+            auto data = connection->get_values();
+            float value = this->arx->run_t(data);
+            qInfo() << "value " << value << "    data: " << std::get<1>(data);
+            QByteArray msg; QDataStream stream(&msg, QIODevice::ReadWrite);
+            stream << std::get<0>(data) << value;
+            qInfo() << "sieciowa odpowiedź Obiektu  " << value << " " << std::get<1>(data);
+            connection->send_msg(msg);
+        }
+        break;
+    }
+    }
+
+
+}
+
+void Simulation::draw_simulation()
+{
+    emit this->add_series("I", frames.last().i, ChartPosition::top);
+    emit this->add_series("D", frames.last().d, ChartPosition::top);
+    emit this->add_series("P", frames.last().p, ChartPosition::top);
+    emit this->add_series("PID", frames.last().pid_output, ChartPosition::top);
+
+    emit this->add_series("Error", frames.last().error, ChartPosition::middle);
+    emit this->add_series("Noise", frames.last().noise, ChartPosition::middle);
+
+    emit this->add_series("ARX", frames.last().arx_output, ChartPosition::bottom);
+    emit this->add_series("Generator", frames.last().geneartor_output, ChartPosition::bottom);
 
     emit this->update_chart();
-
-    this->tick++;
 }
 
 void Simulation::set_ticks_per_second(float ticks_per_second)
@@ -101,7 +176,14 @@ void Simulation::set_ticks_per_second(float ticks_per_second)
 
 void Simulation::timerEvent(QTimerEvent *event)
 {
-    this->simulate();
+    if(connection->is_connected())
+    {
+        this->simulate_online();
+    }
+    else
+    {
+        this->simulate_local();
+    }
 }
 
 void Simulation::start()

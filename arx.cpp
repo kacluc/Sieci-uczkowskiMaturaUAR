@@ -113,9 +113,20 @@ void ARX::reset()
     // this->u
 }
 
+float ARX::run_t(std::tuple<size_t,float> input)
+{
+    return this->run(std::get<1>(input),std::get<0>(input));
+}
+
 float ARX::run(float input)
 {
-    size_t tick = Simulation::get_instance().get_tick();
+    return this->run(input, Simulation::get_instance().get_tick());
+}
+
+float ARX::run(float input, size_t inner_tick)
+{
+    //qInfo() << "Dane ARX: " << A.at(0) << " " << B.at(0);
+
 
     float result = 0;
 
@@ -127,8 +138,8 @@ float ARX::run(float input)
     }
 
     for (size_t i = 0; i < this->A.size(); i++) {
-        if (tick - i > delay) {
-            const size_t u_idx = (tick - i) % delay;
+        if (inner_tick - i > delay) {
+            const size_t u_idx = (inner_tick - i) % delay;
             try {
                 result += this->B.at(i) * this->u.at(u_idx);
             } catch (...) {
@@ -137,8 +148,8 @@ float ARX::run(float input)
     }
 
     for (size_t i = 0; i < this->B.size(); i++) {
-        if (tick - i > delay) {
-            const size_t y_idx = (tick - i) % delay;
+        if (inner_tick - i > delay) {
+            const size_t y_idx = (inner_tick - i) % delay;
             try {
                 result -= this->A.at(i) * this->y.at(y_idx);
             } catch (...) {
@@ -146,8 +157,8 @@ float ARX::run(float input)
         }
     }
 
-    const size_t u_size_t = (tick) % delay;
-    const size_t y_size_t = (tick) % delay;
+    const size_t u_size_t = (inner_tick) % delay;
+    const size_t y_size_t = (inner_tick) % delay;
 
     if (u.size() < delay || y.size() < delay) {
         u.resize(delay);
@@ -159,8 +170,6 @@ float ARX::run(float input)
 
     this->run_noise();
     result += this->noise_part;
-
+    qInfo() << "wyjście z ARX " << result;
     return result;
-
-    return this->y.back();
 }

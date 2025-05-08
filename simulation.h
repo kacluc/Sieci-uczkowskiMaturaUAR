@@ -8,6 +8,8 @@
 #include "generator.h"
 #include "pid.h"
 
+class Connection;
+
 enum class ChartPosition {
     top,
     middle,
@@ -71,12 +73,13 @@ public:
     std::unique_ptr<PID> pid;
     std::unique_ptr<Generator> generator;
     std::unique_ptr<ARX> arx;
+    Connection* connection;
 
-    std::list<SimulationFrame> frames{};
+    QList<SimulationFrame> frames{};
 
     std::vector<std::byte> serialize();
     void deserialize(std::vector<std::byte> data);
-
+    void recived_online_simulation();
 signals:
     void simulation_start();
     void simulation_stop();
@@ -88,8 +91,14 @@ signals:
 protected:
     void timerEvent(QTimerEvent *event) override;
 
+private slots:
+    //void recived_online_simulation();
+
 private:
     void simulate();
+    void simulate_local();
+    void simulate_online();
+    void draw_simulation();
 
     bool is_outside_sum{true};
     float ticks_per_second{60};
@@ -97,6 +106,11 @@ private:
     float current_time{0};
     size_t timer_id{0};
     int interval{100};
+
+    float error_output = 0;
+    float arx_output = 0;
+    float pid_output = 0;
+    float generator_out = 0;
 
     explicit Simulation(QObject *parent = nullptr);
     ~Simulation();

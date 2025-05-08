@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "ui_mainwindow.h"
 
 class SERVER : public QObject
 {
@@ -16,10 +15,8 @@ public:
     void stopListening();
     int getNumClients();
     void sendMsg(QByteArray msg);
-    void set_ui(Ui::MainWindow *Ui) {this->ui = Ui;}
-
 signals:
-    void newClientConnected(QString adr);
+    void newClientConnected(QString adr, int port);
     void clientDisconnetced();
     void newMsg(QByteArray msg);
 
@@ -34,7 +31,6 @@ private:
     int port = 12345;
     QTcpServer server;
     QTcpSocket* client = nullptr;
-    Ui::MainWindow *ui;
 };
 
 #endif // SERVER_H

@@ -28,7 +28,7 @@ void CLIENT::sendMsg(QByteArray msg)
 
 void CLIENT::slot_connected()
 {
-    emit connected(m_ipAddress, m_port);
+    emit connected("Clinet "+m_ipAddress, m_port);
 }
 
 void CLIENT::slot_readyRead()

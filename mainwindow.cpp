@@ -2,8 +2,8 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QTimer>
-#include "./ui_mainwindow.h"
-#include "connectdialog.h"
+#include "connection.h"
+#include "ui_mainwindow.h"
 #include "exportdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -31,6 +31,12 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::setup_UI()
 {
     ui = new Ui::MainWindow;
+}
+
+MainWindow& MainWindow::get_instance()
+{
+    static MainWindow instance;
+    return instance;
 }
 
 void MainWindow::action_simulation_open()
@@ -229,70 +235,47 @@ void MainWindow::action_open()
 
 void MainWindow::action_connect()
 {
-    bool simulation_is_running{simulation.is_running};
-    if(simulation.is_running) simulation.stop();
-    ConnectDialog* window = new ConnectDialog();
-    if(!!window->exec())
-    {
-        /*
-        simulation.reset();
-        if(this->is_connected)
-        {
-            is_connected = false;
-        */
-            if(this->server != nullptr)
-            {
-                delete this->server;
-                this->server = nullptr;
-            }
-            if(this->client != nullptr)
-            {
-                delete this->client;
-                this->client = nullptr;
-            }
-        /*
-        }
-        */
-        if(window->get_connection_type())
-        {
-            this->server = new SERVER(this);
-            this->server->set_ui(ui);
-            bool tst = false;
-            tst = this->server->startListening(window->get_Port());
-            qInfo() << "server listening: " << tst;
-        }
-        else
-        {
-            this->client = new CLIENT(this);
-            connect(this->client, SIGNAL(connected(QString,int)), this, SLOT(slot_connected(QString,int)));
-            bool tst = true, tst2 = true;
-
-            QHostAddress ipAdr(window->get_IP());
-            if (ipAdr.protocol() != QAbstractSocket::IPv4Protocol) {
-                tst = false;
-            }
-            if (window->get_Port() < 0 || 65535 < window->get_Port()) {
-                tst2 = false;
-            }
-
-            this->client->connectTo(window->get_IP(), window->get_Port());
-            qInfo() << "ip: " << tst << " port: " << tst2;
-            client->sendMsg("wiadomość");
-        }
-    }
-    else if(simulation_is_running) simulation.start();
-    delete window;
+    this->simulation.connection->make_connection();
 }
 
 void MainWindow::slot_connected(QString adr, int port)
 {
     ui->IPconnectionOutput->setText("Połączono: " + adr + ":" + QString::number(port));
-    qInfo() << "DZIAŁA";
+    this->set_controles_availability();
+}
+
+void MainWindow::set_controles_availability()
+{
+    bool Simulation = true, ARX = true, PID = true, Generator = true;
+    switch(this->simulation.connection->get_connection_type())
+    {
+    default:
+    case Connected_as::none:
+        break;
+    case Connected_as::server:
+    {
+        ARX = false;
+        break;
+    }
+    case Connected_as::client:
+    {
+        Simulation = false;
+        PID = false;
+        Generator = false;
+        break;
+    }
+    }
+    ui->Simulation_group->setEnabled(Simulation);
+    ui->ARX_group->setEnabled(ARX);
+    ui->PID_group->setEnabled(PID);
+    ui->Generator_group->setEnabled(Generator);
 }
 
 void MainWindow::action_disconnect()
 {
-    qInfo() << "no se kliknąłeś śmieciu rozłączanie";
+    qInfo() << "rozłączanie";
+    simulation.connection->disconnect();
+    set_controles_availability();
 }
 
 void MainWindow::init()

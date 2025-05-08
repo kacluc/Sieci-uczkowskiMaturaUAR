@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-
+    static MainWindow& get_instance();
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -70,15 +70,12 @@ private slots:
 
     void on_inside_sum_radio_clicked();
 
-    //test
     void slot_connected(QString adr, int port);
 
+    void set_controles_availability();
 private:
     void init();
     void setup_UI();
-    bool is_connected = false;
-    SERVER* server = nullptr;
-    CLIENT* client = nullptr;
     Simulation &simulation;
     Ui::MainWindow *ui;
 };

@@ -38,7 +38,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         client.h client.cpp
         server.h server.cpp
         connectdialog.h connectdialog.cpp connectdialog.ui
-        disconnectdialog.h disconnectdialog.cpp disconnectdialog.ui
+        connection.h connection.cpp
+
 
 
 

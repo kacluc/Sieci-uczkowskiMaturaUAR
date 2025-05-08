@@ -1,6 +1,4 @@
 #include "server.h"
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 SERVER::SERVER(QObject *parent)
     : QObject{parent}
@@ -45,9 +43,7 @@ void SERVER::slot_new_client()
         connect(client, SIGNAL(disconnected()), this, SLOT(slot_client_disconnetcted()));
         connect(client, SIGNAL(readyRead()), this, SLOT(slot_newMsg()));
         this->startListening(this->port);
-        ui->IPconnectionOutput->setText("Connected on port: " + QString::number(this->port));
-        ui->IPconnectionOutput->setVisible(true);
-        emit newClientConnected(client->peerAddress().toString());
+        emit newClientConnected("Server " + client->peerAddress().toString(), client->peerPort());
     }
 }
 
