@@ -27,6 +27,7 @@ void Connection::disconnect()
         }
     }
     this->connected_as = Connected_as::none;
+    emit this->disconnected();
 }
 
 void Connection::send_msg(QByteArray msg)
@@ -67,6 +68,7 @@ void Connection::make_connection()
             this->connected_as = Connected_as::server;
             connect(this->server, SIGNAL(newClientConnected(QString,int)), &MainWindow::get_instance(), SLOT(slot_connected(QString,int)));
             connect(this->server, SIGNAL(newMsg(QByteArray)), this, SLOT(new_message(QByteArray)));
+            connect(this->server, SIGNAL(disconnected()), this, SLOT(slot_dissconect()));
             qInfo() << "server listening: " << tst;
         }
         else
@@ -74,6 +76,7 @@ void Connection::make_connection()
             this->client = new CLIENT(this);
             connect(this->client, SIGNAL(connected(QString,int)), &MainWindow::get_instance(), SLOT(slot_connected(QString,int)));
             connect(this->client, SIGNAL(messageRecived(QByteArray)), this, SLOT(new_message(QByteArray)));
+            connect(this->client, SIGNAL(disconnected()), this, SLOT(slot_dissconect()));
             bool tst = true, tst2 = true;
 
             QHostAddress ipAdr(window->get_IP());

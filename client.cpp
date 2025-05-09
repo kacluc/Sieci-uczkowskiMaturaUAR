@@ -19,6 +19,7 @@ void CLIENT::connectTo(QString address, int port)
 void CLIENT::disconnectFrom()
 {
     m_socket.close();
+    emit this->disconnected();
 }
 
 void CLIENT::sendMsg(QByteArray msg)

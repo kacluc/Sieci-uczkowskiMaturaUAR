@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this->ui->action_connect, &QAction::triggered, this, &MainWindow::action_connect);
     connect(this->ui->action_disconnect, &QAction::triggered, this, &MainWindow::action_disconnect);
 
-    //this->ui->IPhorizontalGroupBox->setVisible(false);
+    connect(this->simulation.connection, SIGNAL(disconnected()) , this, SLOT(slot_disconnected()));
 }
 
 void MainWindow::setup_UI()
@@ -273,9 +273,13 @@ void MainWindow::set_controles_availability()
 
 void MainWindow::action_disconnect()
 {
-    qInfo() << "rozłączanie";
     simulation.connection->disconnect();
-    set_controles_availability();
+}
+
+void MainWindow::slot_disconnected()
+{
+    this->set_controles_availability();
+    this->ui->IPconnectionOutput->setText("--");
 }
 
 void MainWindow::init()

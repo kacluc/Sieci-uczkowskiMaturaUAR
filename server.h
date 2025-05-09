@@ -17,7 +17,7 @@ public:
     void sendMsg(QByteArray msg);
 signals:
     void newClientConnected(QString adr, int port);
-    void clientDisconnetced();
+    void disconnetced();
     void newMsg(QByteArray msg);
 
 private slots:

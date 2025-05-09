@@ -50,7 +50,7 @@ void SERVER::slot_new_client()
 void SERVER::slot_client_disconnetcted()
 {
     client->disconnectFromHost();
-    emit clientDisconnetced();
+    emit disconnetced();
 }
 
 void SERVER::slot_newMsg()

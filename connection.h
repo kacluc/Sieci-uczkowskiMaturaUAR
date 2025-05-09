@@ -29,8 +29,10 @@ public:
     void send_msg(QByteArray msg);
 signals:
     void newMsg();
+    void disconnected();
 private slots:
     void new_message(QByteArray msg);
+    void slot_dissconect() {this->disconnect();}
 
 private:
     Connected_as connected_as{Connected_as::none};

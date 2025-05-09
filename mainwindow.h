@@ -63,6 +63,7 @@ private slots:
     void action_simulation_open();
     void action_connect();
     void action_disconnect();
+    void slot_disconnected();
 
     void on_generator_infill_input_editingFinished();
 
