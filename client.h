@@ -10,8 +10,8 @@ class CLIENT : public QObject
 public:
     explicit CLIENT(QObject *parent = nullptr);
     void connectTo(QString address, int port);
-    void disconnectFrom();
-    bool isConnected() { return m_socket.isOpen(); }
+    void disconnect();
+    bool isConnected() { return this->is_connected; }
     void sendMsg(QByteArray msg);
 
 signals:
@@ -22,11 +22,13 @@ signals:
 private slots:
     void slot_connected();
     void slot_readyRead();
+    void slod_disconnected();
 
 private:
-    QTcpSocket m_socket;
-    QString m_ipAddress = "127.0.0.1";
-    int m_port = 12345;
+    bool is_connected = false;
+    QTcpSocket socket;
+    QString ip_address = "127.0.0.1";
+    int port = 12345;
 };
 
 #endif // CLIENT_H

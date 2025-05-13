@@ -2,38 +2,54 @@
 
 CLIENT::CLIENT(QObject *parent)
     : QObject{parent}
-    , m_socket(this)
+    , socket(this)
 {
-    connect(&m_socket, SIGNAL(connected()), this, SLOT(slot_connected()));
-    connect(&m_socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-    connect(&m_socket, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
+    connect(&socket, SIGNAL(connected()), this, SLOT(slot_connected()));
+    connect(&socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+    connect(&socket, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
 }
 
 void CLIENT::connectTo(QString address, int port)
 {
-    m_ipAddress = address;
-    m_port = port;
-    m_socket.connectToHost(m_ipAddress, port);
+    ip_address = address;
+    port = port;
+    this->is_connected = true;
+    socket.connectToHost(ip_address, port);
 }
 
-void CLIENT::disconnectFrom()
+void CLIENT::slod_disconnected()
 {
-    m_socket.close();
-    emit this->disconnected();
+    this->disconnect();
+}
+
+void CLIENT::disconnect()
+{
+    if(this->is_connected)
+    {
+        is_connected = false;
+        try
+        {
+            socket.disconnectFromHost();
+            socket.close();
+        }
+        catch (...) {}
+        qInfo() << "Rozłączenie wewnątrz CLIENTA!!!!!!!!!!!!";
+        emit this->disconnected();
+    }
 }
 
 void CLIENT::sendMsg(QByteArray msg)
 {
-    m_socket.write(msg);
+    socket.write(msg);
 }
 
 void CLIENT::slot_connected()
 {
-    emit connected("Clinet "+m_ipAddress, m_port);
+    emit connected("Clinet "+ip_address, port);
 }
 
 void CLIENT::slot_readyRead()
 {
-    auto message = m_socket.readAll();
+    auto message = socket.readAll();
     emit messageRecived(message);
 }

@@ -32,7 +32,7 @@ signals:
     void disconnected();
 private slots:
     void new_message(QByteArray msg);
-    void slot_dissconect() {this->disconnect();}
+    void slot_disconnected() {this->disconnect();}
 
 private:
     Connected_as connected_as{Connected_as::none};

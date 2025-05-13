@@ -16,14 +16,16 @@ void Connection::disconnect()
         if(this->server != nullptr)
         {
             server->disconnect();
-            delete this->server;
+            //delete this->server;
             this->server = nullptr;
+            qInfo() << "Server się rozłączył";
         }
         if(this->client != nullptr)
         {
-            client->disconnectFrom();
-            delete this->client;
+            client->disconnect();
+            //delete this->client;
             this->client = nullptr;
+            qInfo() << "Client się rozłączył";
         }
     }
     this->connected_as = Connected_as::none;
@@ -68,7 +70,7 @@ void Connection::make_connection()
             this->connected_as = Connected_as::server;
             connect(this->server, SIGNAL(newClientConnected(QString,int)), &MainWindow::get_instance(), SLOT(slot_connected(QString,int)));
             connect(this->server, SIGNAL(newMsg(QByteArray)), this, SLOT(new_message(QByteArray)));
-            connect(this->server, SIGNAL(disconnected()), this, SLOT(slot_dissconect()));
+            connect(this->server, SIGNAL(disconnected()), this, SLOT(slot_disconnected()));
             qInfo() << "server listening: " << tst;
         }
         else
@@ -76,7 +78,7 @@ void Connection::make_connection()
             this->client = new CLIENT(this);
             connect(this->client, SIGNAL(connected(QString,int)), &MainWindow::get_instance(), SLOT(slot_connected(QString,int)));
             connect(this->client, SIGNAL(messageRecived(QByteArray)), this, SLOT(new_message(QByteArray)));
-            connect(this->client, SIGNAL(disconnected()), this, SLOT(slot_dissconect()));
+            connect(this->client, SIGNAL(disconnected()), this, SLOT(slot_disconnected()));
             bool tst = true, tst2 = true;
 
             QHostAddress ipAdr(window->get_IP());
@@ -99,8 +101,8 @@ void Connection::make_connection()
 
 void Connection::new_message(QByteArray msg)
 {
-    if(connected_as == Connected_as::client) qInfo() << "Obiekt Otrzymał wiadomość";
-    if(connected_as == Connected_as::server) qInfo() << "Regulator Otrzymał wiadomość";
+    //if(connected_as == Connected_as::client) qInfo() << "Obiekt Otrzymał wiadomość";
+    //if(connected_as == Connected_as::server) qInfo() << "Regulator Otrzymał wiadomość";
     QDataStream stream(&msg, QIODevice::ReadOnly);
     size_t tick; float value;
     stream >> tick >> value;
@@ -109,17 +111,17 @@ void Connection::new_message(QByteArray msg)
     {
         std::sort(this->gained_values.begin(), this->gained_values.end(), [](const std::tuple<size_t, float>& fst, const std::tuple<size_t, float>& sec) {return std::get<0>(fst) < std::get<0>(sec); });
     }
-    qInfo() << "wysłanie wiadomości z connection" << std::get<0>(gained_values[0]) << " " << std::get<1>(gained_values[0]);
+    //qInfo() << "wysłanie wiadomości z connection" << std::get<0>(gained_values[0]) << " " << std::get<1>(gained_values[0]);
     Simulation::get_instance().recived_online_simulation();
 }
 
 std::tuple<size_t,float> Connection::get_values()
 {
-    auto l1 = gained_values.length();
+    //auto l1 = gained_values.length();
     auto values = this->gained_values[0];
     this->gained_values.pop_front();
-    auto l2 = gained_values.length();;
-    qInfo() << "Zwrócona wartość: " << std::get<1>(values) << " " << l1-l2;
+    //auto l2 = gained_values.length();;
+    //qInfo() << "Zwrócona wartość: " << std::get<1>(values) << " " << l1-l2;
     return values;
 }
 

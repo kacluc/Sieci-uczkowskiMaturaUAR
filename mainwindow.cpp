@@ -280,6 +280,7 @@ void MainWindow::slot_disconnected()
 {
     this->set_controles_availability();
     this->ui->IPconnectionOutput->setText("--");
+    qInfo() << "Slot_disconnected w MainWindow: ";
 }
 
 void MainWindow::init()

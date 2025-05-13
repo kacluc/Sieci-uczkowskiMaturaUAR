@@ -40,17 +40,32 @@ void SERVER::slot_new_client()
     if(this->client == nullptr)
     {
         client = server.nextPendingConnection();
-        connect(client, SIGNAL(disconnected()), this, SLOT(slot_client_disconnetcted()));
+        connect(client, SIGNAL(disconnected()), this, SLOT(slot_disconnected()));
         connect(client, SIGNAL(readyRead()), this, SLOT(slot_newMsg()));
         this->startListening(this->port);
+        this->is_connected = true;
         emit newClientConnected("Server " + client->peerAddress().toString(), client->peerPort());
     }
 }
 
-void SERVER::slot_client_disconnetcted()
+void SERVER::slot_disconnected()
 {
-    client->disconnectFromHost();
-    emit disconnetced();
+    this->disconnect();
+}
+
+void SERVER::disconnect()
+{
+    if(this->is_connected)
+    {
+        this->is_connected = false;
+        try
+        {
+            client->disconnectFromHost();
+        }
+        catch(...) {}
+        qInfo() << "Rozłączenie wewnątrz SERVERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!";
+        emit disconnected();
+    }
 }
 
 void SERVER::slot_newMsg()
