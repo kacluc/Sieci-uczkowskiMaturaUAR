@@ -101,17 +101,17 @@ void Simulation::simulate_online()
 
 void Simulation::recived_online_simulation()
 {
-    qInfo() << "ASDASDASDASDASDASDASDASDASD";
-    if(connection->get_connection_type() == Connected_as::client) qInfo() << "Obiekt Otrzymał wiadomość ZWROTNĄ";
-    if(connection->get_connection_type() == Connected_as::server) qInfo() << "Regulator Otrzymał wiadomość ZWROTNĄ";
+    //qInfo() << "ASDASDASDASDASDASDASDASDASD";
+    //if(connection->get_connection_type() == Connected_as::client) qInfo() << "Obiekt Otrzymał wiadomość ZWROTNĄ";
+    //if(connection->get_connection_type() == Connected_as::server) qInfo() << "Regulator Otrzymał wiadomość ZWROTNĄ";
     switch(connection->get_connection_type())
     {
     default:
     case Connected_as::none: break;
     case Connected_as::server:
     {
-        qInfo() << "tick: " << this->get_tick();
-        qInfo() << "Ilość ramek: " << frames.size() << "     index: " << connection->get_last_readed_index();
+        //qInfo() << "tick: " << this->get_tick();
+        //qInfo() << "Ilość ramek: " << frames.size() << "     index: " << connection->get_last_readed_index();
         if(connection->values_avaiable())
         {
             auto msg = connection->get_values();
@@ -130,7 +130,7 @@ void Simulation::recived_online_simulation()
             };
             this->frames.push_back(frame);
             this->draw_simulation();
-            qInfo() << "sieciowa odpowiedź regulatora";
+            //qInfo() << "sieciowa odpowiedź regulatora";
         }
         break;
     }
@@ -139,11 +139,28 @@ void Simulation::recived_online_simulation()
         //if(connection->values_avaiable())
         {
             auto data = connection->get_values();
+            size_t online_tick = std::get<0>(data);
             float value = this->arx->run_t(data);
-            qInfo() << "value " << value << "    data: " << std::get<1>(data);
+            //qInfo() << "value " << value << "    data: " << std::get<1>(data);
             QByteArray msg; QDataStream stream(&msg, QIODevice::ReadWrite);
-            stream << std::get<0>(data) << value;
-            qInfo() << "sieciowa odpowiedź Obiektu  " << value << " " << std::get<1>(data);
+            stream << online_tick << value;
+            //qInfo() << "sieciowa odpowiedź Obiektu  " << value << " " << std::get<1>(data);
+            this->tick = online_tick;
+
+            SimulationFrame frame{
+                .tick = this->tick,
+                .geneartor_output = 0,
+                .p = 0,
+                .i = 0,
+                .d = 0,
+                .pid_output = std::get<1>(data),
+                .error = 0,
+                .arx_output = value,
+                .noise = this->arx->noise_part,
+            };
+            this->current_time += interval / 1000.0f;
+            this->frames.push_back(frame);
+            this->draw_simulation();
             connection->send_msg(msg);
         }
         break;
